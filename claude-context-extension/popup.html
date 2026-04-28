@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap");
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        width: 400px;
+        font-family: "DM Sans", system-ui, sans-serif;
+        font-size: 13px;
+        background: #0d0d0d;
+        color: #e8e8e8;
+        min-height: 200px;
+      }
+
+      /* ── Header ── */
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: #0d0d0d;
+        border-bottom: 1px solid #1f1f1f;
+        min-height: 44px;
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .header-logo {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #c96442, #e8956d);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+      .header h1 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #f0f0f0;
+        letter-spacing: -0.2px;
+      }
+
+      #profile-badge {
+        display: none;
+        align-items: center;
+        gap: 6px;
+      }
+      .connected-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #4ade80;
+        flex-shrink: 0;
+      }
+      #profile-name {
+        font-size: 11px;
+        color: #888;
+        font-family: "DM Mono", monospace;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .icon-btn {
+        background: transparent;
+        border: 1px solid #2a2a2a;
+        border-radius: 4px;
+        color: #666;
+        cursor: pointer;
+        font-size: 11px;
+        padding: 3px 8px;
+        font-family: "DM Sans", sans-serif;
+        transition: all 0.15s;
+      }
+      .icon-btn:hover {
+        background: #1a1a1a;
+        color: #ccc;
+        border-color: #333;
+      }
+      .icon-btn.danger:hover {
+        background: #2a0a0a;
+        border-color: #5a1a1a;
+        color: #f87171;
+      }
+
+      /* ── Login prompt ── */
+      #login-prompt {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        padding: 32px 24px 28px;
+        text-align: center;
+        background: #0d0d0d;
+      }
+
+      .claude-mark {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+      }
+
+      #login-prompt h2 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #f0f0f0;
+        margin-bottom: 8px;
+        letter-spacing: -0.3px;
+      }
+      #login-prompt p {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.65;
+        margin-bottom: 22px;
+        max-width: 260px;
+      }
+
+      .open-claude-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: #c96442;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        transition: background 0.15s;
+        text-decoration: none;
+      }
+      .open-claude-btn:hover {
+        background: #b5593b;
+      }
+
+      .login-footer {
+        margin-top: 16px;
+        font-size: 11px;
+        color: #444;
+        line-height: 1.5;
+      }
+
+      /* ── Main UI ── */
+      #main-ui {
+        display: none;
+        flex-direction: column;
+      }
+
+      /* Screenshot preview strip */
+      #preview-container {
+        display: none;
+        padding: 8px 12px;
+        background: #111;
+        border-bottom: 1px solid #1f1f1f;
+        align-items: center;
+        gap: 8px;
+      }
+      #screenshot-preview {
+        height: 52px;
+        border-radius: 4px;
+        border: 1px solid #2a2a2a;
+        object-fit: cover;
+      }
+      .preview-label {
+        flex: 1;
+        font-size: 11px;
+        color: #555;
+      }
+      .preview-label span {
+        display: block;
+        color: #888;
+        font-size: 11px;
+      }
+      #btn-discard {
+        background: none;
+        border: none;
+        color: #444;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+        padding: 2px 4px;
+      }
+      #btn-discard:hover {
+        color: #f87171;
+      }
+
+      /* Input area */
+      .input-area {
+        padding: 10px 12px 12px;
+        background: #0d0d0d;
+      }
+
+      textarea {
+        width: 100%;
+        height: 64px;
+        padding: 9px 11px;
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 8px;
+        color: #e0e0e0;
+        font-size: 13px;
+        font-family: "DM Sans", sans-serif;
+        resize: none;
+        line-height: 1.5;
+        transition: border-color 0.15s;
+      }
+      textarea::placeholder {
+        color: #444;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: #333;
+      }
+
+      .controls {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .ctrl-btn {
+        flex: 1;
+        padding: 8px 4px;
+        border: 1px solid #1f1f1f;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 11.5px;
+        font-weight: 500;
+        font-family: "DM Sans", sans-serif;
+        transition: all 0.15s;
+        background: #141414;
+        color: #888;
+      }
+      .ctrl-btn:hover {
+        background: #1a1a1a;
+        color: #ccc;
+        border-color: #2a2a2a;
+      }
+
+      #btn-capture {
+        color: #6b9fff;
+        border-color: #162040;
+        background: #0d1628;
+      }
+      #btn-capture:hover {
+        background: #111e38;
+        border-color: #1e3060;
+        color: #89b4ff;
+      }
+
+      #btn-record {
+        color: #4ade80;
+        border-color: #0d2918;
+        background: #081a10;
+      }
+      #btn-record:hover {
+        background: #0d2318;
+        color: #6ee7a0;
+      }
+      #btn-record.recording {
+        background: #2a0a0a;
+        color: #f87171;
+        border-color: #5a1a1a;
+      }
+
+      #btn-page {
+        color: #a78bfa;
+        border-color: #1e1628;
+        background: #130d1e;
+      }
+      #btn-page:hover {
+        background: #1a1028;
+        color: #c4b5fd;
+      }
+
+      #btn-send {
+        flex: 1.5;
+        background: #c96442;
+        color: white;
+        border-color: transparent;
+        font-weight: 600;
+      }
+      #btn-send:hover {
+        background: #b5593b;
+      }
+      #btn-send:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      #status {
+        padding: 4px 12px 8px;
+        font-size: 11px;
+        color: #555;
+        font-family: "DM Mono", monospace;
+        min-height: 22px;
+        background: #0d0d0d;
+      }
+      #status.error {
+        color: #f87171;
+      }
+
+      /* ── Mic help panel ── */
+      #mic-help {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 14px 14px;
+        background: #110808;
+        border-top: 1px solid #3a1010;
+      }
+      .mic-help-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #f87171;
+      }
+      .mic-help-step {
+        font-size: 11px;
+        color: #888;
+        line-height: 1.6;
+      }
+      .mic-help-step strong {
+        color: #ccc;
+        display: block;
+        margin-bottom: 2px;
+      }
+      .mic-fix-btn {
+        display: inline-block;
+        margin-top: 4px;
+        padding: 5px 10px;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 5px;
+        color: #aaa;
+        font-size: 11px;
+        font-family: "DM Sans", sans-serif;
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+      }
+      .mic-fix-btn:hover {
+        background: #222;
+        color: #eee;
+        border-color: #444;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Header ── -->
+    <div class="header">
+      <div class="header-left">
+        <div class="header-logo">✦</div>
+        <h1>Claude Context Helper</h1>
+      </div>
+      <div id="profile-badge">
+        <span class="connected-dot"></span>
+        <span id="profile-name"></span>
+        <button class="icon-btn danger" id="btn-signout">Sign out</button>
+      </div>
+    </div>
+
+    <!-- ── Login prompt ── -->
+    <div id="login-prompt">
+      <div class="claude-mark">✦</div>
+      <h2>Connect to Claude</h2>
+      <p>
+        Sign in to claude.ai first, then return here. Your plan limits apply
+        automatically — no extra charges.
+      </p>
+      <button class="open-claude-btn" id="btn-open-claude">
+        Open claude.ai →
+      </button>
+      <p class="login-footer">
+        Already signed in? Click the extension icon again.
+      </p>
+    </div>
+
+    <!-- ── Main UI ── -->
+    <div id="main-ui">
+      <!-- Screenshot preview -->
+      <div id="preview-container">
+        <img id="screenshot-preview" alt="screenshot" />
+        <div class="preview-label">
+          <span>Screenshot captured</span>
+          Ready to send with your message
+        </div>
+        <button id="btn-discard">✕</button>
+      </div>
+
+      <!-- Input + controls -->
+      <div class="input-area">
+        <textarea
+          id="user-input"
+          placeholder="Describe your issue, ask a question, or just hit Send after a capture…"
+        ></textarea>
+        <div class="controls">
+          <button class="ctrl-btn" id="btn-capture">📸 Capture</button>
+          <button class="ctrl-btn" id="btn-record">🎙 Record</button>
+          <button class="ctrl-btn" id="btn-page">📄 Page</button>
+          <button class="ctrl-btn" id="btn-send">Send ➜</button>
+        </div>
+      </div>
+      <div id="status"></div>
+
+      <!-- Mic blocked help panel -->
+      <div id="mic-help">
+        <div class="mic-help-title">Microphone is blocked</div>
+
+        <div class="mic-help-step">
+          <strong>Fix 1 — Windows privacy setting (most common)</strong>
+          Start → Settings → Privacy → Microphone<br>
+          Turn ON "Allow desktop apps to access your microphone"
+          <button class="mic-fix-btn" id="btn-win-settings">
+            Open Windows mic privacy settings guide →
+          </button>
+        </div>
+
+        <div class="mic-help-step">
+          <strong>Fix 2 — Chrome extension permission</strong>
+          Click below, find "Microphone", change it to Allow
+          <button class="mic-fix-btn" id="btn-ext-settings">
+            Open this extension's Chrome permissions →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
